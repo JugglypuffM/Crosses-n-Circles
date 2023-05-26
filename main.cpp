@@ -1,6 +1,19 @@
 #include <iostream>
+#include "Interface.h"
+
+using namespace std;
+
+Game game;
+Player* current_turn;
+string input;
 
 int main() {
-    std::cout << "Hello, World!" << std::endl;
-    return 0;
+    Interface interface;
+    do {
+        interface.initiate();
+        do {
+            interface.make_turn();
+            interface.print_state();
+        }while(!interface.check_end());
+    } while (!interface.quit());
 }
