@@ -3,23 +3,22 @@
 //
 
 #include "Interface.h"
-#include "Player.h"
 
 void Interface::initiate() {
-    Player x_player, o_player;
+    bool x_player, o_player;
     int difficulty;
     do {
         cout << "Please choose your shape(X, O or M):" << endl;
         cin >> input;
         if (input == "X") {
-            x_player.humanize();
+            x_player = true;
             break;
         } else if (input == "O") {
-            o_player.humanize();
+            o_player = true;
             break;
         }else if (input == "M") {
-            x_player.humanize();
-            o_player.humanize();
+            x_player = true;
+            o_player = true;
             break;
         }
         cout << "Wrong shape" << endl;
@@ -52,7 +51,7 @@ bool Interface::quit() {
 void Interface::make_turn() {
     string decision;
     char a, b;
-    if(game.whose_turn()->is_human()){
+    if(game.whose_turn()->human){
         do {
             cout << "Make your turn:" << endl;
             cin >> input;
@@ -94,18 +93,17 @@ bool Interface::check_end() {
     }
 }
 
-void Game::set_options(int d, Player xp, Player op) {
+void Game::set_options(int d, bool xp, bool op) {
     difficulty = d;
-    x_player = xp;
-    o_player = op;
+    x_player.human = xp;
+    o_player.human = op;
     current_turn = &this->x_player;
     x = o = 0;
 }
 
 void Game::do_turn(string decision) {
     if(decision == "-1"){
-        cout << "Still in development)" << endl;
-        exit(69);
+        decision = ai_decision();
     }
     if(current_turn == &x_player){
         x = x | (1 << ((decision[0] - (int)'0')*3 + decision[1] - (int)'0'));
@@ -132,7 +130,7 @@ bool Game::check_emptiness(int f, int s) {
 }
 
 string Game::return_state() {
-    string result = "";
+    string result = "_________";
     for (int i = 0; i < 9; ++i) {
         if((x & (1 << i)) != 0){
             result[i] = 'X';
@@ -143,6 +141,19 @@ string Game::return_state() {
     return result;
 }
 
-Player *Game::whose_turn() {
+Game::Player *Game::whose_turn() {
     return current_turn;
+}
+
+string Game::ai_decision() {
+    string decision;
+    if (difficulty == 0){
+        srand(time(nullptr)%12345);
+        do {
+            decision = string() + (char)(rand()%3 + '0') + (char)(rand()%3 + '0');
+        } while(!check_emptiness(decision[0] - (int)'0', decision[1] - (int)'0'));
+    }else if(difficulty == 1) decision = table[x][o].substr(4, 2);
+    else if(difficulty == 2) decision = table[x][o].substr(2, 2);
+    else if(difficulty == 3) decision = table[x][o].substr(0, 2);
+    return decision;
 }
