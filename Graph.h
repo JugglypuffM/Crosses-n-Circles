@@ -12,7 +12,7 @@ using namespace std;
 struct Graph {
     int x, o;
     string change;
-    vector<int> outcomes;
+    int outcomes[3];
     vector<Graph> child;
     Graph(int, int);
     void build(bool);

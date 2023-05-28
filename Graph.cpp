@@ -6,18 +6,20 @@
 
 Graph::Graph(int a, int b) {
     x = a; o = b;
-    outcomes = {0, 0, 0};
+    outcomes[0] = 0;
+    outcomes[1] = 0;
+    outcomes[2] = 0;
 }
 
 void Graph::build(bool a) {
-    int w = 0;
+    int w = -1;
     int win_states[8] = {448, 292, 273, 146, 84, 73, 56, 7};
     for (int i = 0; i < 8; ++i) {
         if((x & win_states[i]) == win_states[i]) w = 0;
         else if ((o & win_states[i]) == win_states[i]) w = 2;
         else if((x|o) == 511) w = 1;
     }
-    if(w != 0){
+    if(w != -1){
         outcomes[w]++;
         return;
     }
