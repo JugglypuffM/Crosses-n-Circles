@@ -13,7 +13,7 @@ struct Graph {
     int x, o;
     string change;
     int outcomes[3];
-    vector<Graph> child;
+    vector<Graph> children;
     Graph(int, int);
     void build(bool);
 };

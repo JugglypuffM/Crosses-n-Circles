@@ -29,35 +29,43 @@ void Graph::build(bool a) {
                 Graph ch = a ? Graph(this->x, this->o | 1 << (i * 3 + 1 * j)) : Graph(this->x | 1 << (i * 3 + 1 * j), this->o);
                 ch.change = to_string(i) + to_string(j);
                 ch.build(!a);
-                child.push_back(ch);
+                children.push_back(ch);
             }
         }
     }
-    for (int i = 0;i<child.size();i++){
-        outcomes[0]+=child[i].outcomes[0];
-        outcomes[1]+=child[i].outcomes[1];
-        outcomes[2]+=child[i].outcomes[2];
+    for (int i = 0; i < children.size(); i++){
+        outcomes[0]+=children[i].outcomes[0];
+        outcomes[1]+=children[i].outcomes[1];
+        outcomes[2]+=children[i].outcomes[2];
     }
 }
 
+bool next_win(Graph* child){
+    for (int i = 0; i < child->children.size(); ++i) {
+        Graph current = child->children[i];
+        if ((current.outcomes[0] + current.outcomes[1] + current.outcomes[2]) == 1) return true;
+    }
+    return false;
+}
+
 void traverse_graph(string ** table, Graph* graph){
-    if(graph->child.empty()) return;
+    if(graph->children.empty()) return;
     double win_max = -1, draw_max = -1, loose_max = -1, all_outcomes;
     string win_turn, draw_turn, loose_turn;
-    for (int i = 0; i < graph->child.size(); ++i) {
-        traverse_graph(table, &graph->child[i]);
-        all_outcomes = graph->child[i].outcomes[0] + graph->child[i].outcomes[1] + graph->child[i].outcomes[2];
-        if(graph->child[i].outcomes[0]/all_outcomes >= win_max) {
-            win_turn = graph->child[i].change;
-            win_max = graph->child[i].outcomes[0]/all_outcomes;
+    for (int i = 0; i < graph->children.size(); ++i) {
+        traverse_graph(table, &graph->children[i]);
+        all_outcomes = graph->children[i].outcomes[0] + graph->children[i].outcomes[1] + graph->children[i].outcomes[2];
+        if((graph->children[i].outcomes[0] / all_outcomes >= win_max) && (graph->children[i].outcomes[0] != 0) && !next_win(&graph->children[i])) {
+            win_turn = graph->children[i].change;
+            win_max = graph->children[i].outcomes[0] / all_outcomes;
         }
-        if(graph->child[i].outcomes[1]/all_outcomes >= draw_max){
-            draw_turn = graph->child[i].change;
-            draw_max = graph->child[i].outcomes[1]/all_outcomes;
+        if((graph->children[i].outcomes[1] / all_outcomes >= draw_max) && (graph->children[i].outcomes[1] != 0) && !next_win(&graph->children[i])){
+            draw_turn = graph->children[i].change;
+            draw_max = graph->children[i].outcomes[1] / all_outcomes;
         }
-        if(graph->child[i].outcomes[2]/all_outcomes >= loose_max){
-            loose_turn = graph->child[i].change;
-            loose_max = graph->child[i].outcomes[2]/all_outcomes;
+        if((graph->children[i].outcomes[2] / all_outcomes >= loose_max) && (graph->children[i].outcomes[2] != 0) && !next_win(&graph->children[i])){
+            loose_turn = graph->children[i].change;
+            loose_max = graph->children[i].outcomes[2] / all_outcomes;
         }
     }
     table[graph->x][graph->o] = win_turn + draw_turn + loose_turn;
@@ -73,5 +81,4 @@ string** fill_table(){
     traverse_graph(table, &graph);
     return table;
 }
-
 

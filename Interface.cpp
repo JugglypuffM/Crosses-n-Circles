@@ -55,11 +55,11 @@ void Interface::make_turn() {
         do {
             cout << "Make your turn:" << endl;
             cin >> input;
-            a = input[0]; b = input[1];
+            b = input[0]; a = input[1];
             if(((a == '1' || a == '2' || a == '3') &&
-               (b == '1' || b == '2' || b == '3')) &&
-                game.check_emptiness(a - (int)'0' - 1, b - (int)'0' - 1)){
-                decision = string() + (char)(a - 1) + (char)(b - 1);
+               (b == 'A' || b == 'B' || b == 'C')) &&
+                game.check_emptiness(a - (int)'0' - 1, b - (int)'A')){
+                decision = string() + (char)(a - 1) + to_string(b - (int)'A');
                 break;
             }
             cout << "Turn written incorrectly or position is already occupied" << endl;
