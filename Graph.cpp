@@ -55,15 +55,15 @@ void traverse_graph(string ** table, Graph* graph){
     for (int i = 0; i < graph->children.size(); ++i) {
         traverse_graph(table, &graph->children[i]);
         all_outcomes = graph->children[i].outcomes[0] + graph->children[i].outcomes[1] + graph->children[i].outcomes[2];
-        if((graph->children[i].outcomes[0] / all_outcomes >= win_max) && (graph->children[i].outcomes[0] != 0) && !next_win(&graph->children[i])) {
+        if((graph->children[i].outcomes[0] / all_outcomes >= win_max) && (!next_win(&graph->children[i]) || win_turn.empty())) {
             win_turn = graph->children[i].change;
             win_max = graph->children[i].outcomes[0] / all_outcomes;
         }
-        if((graph->children[i].outcomes[1] / all_outcomes >= draw_max) && (graph->children[i].outcomes[1] != 0) && !next_win(&graph->children[i])){
+        if((graph->children[i].outcomes[1] / all_outcomes >= draw_max) && (!next_win(&graph->children[i]) || draw_turn.empty())){
             draw_turn = graph->children[i].change;
             draw_max = graph->children[i].outcomes[1] / all_outcomes;
         }
-        if((graph->children[i].outcomes[2] / all_outcomes >= loose_max) && (graph->children[i].outcomes[2] != 0) && !next_win(&graph->children[i])){
+        if((graph->children[i].outcomes[2] / all_outcomes >= loose_max) || next_win(&graph->children[i])){
             loose_turn = graph->children[i].change;
             loose_max = graph->children[i].outcomes[2] / all_outcomes;
         }
